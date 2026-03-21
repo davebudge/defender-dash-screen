@@ -170,6 +170,21 @@
     image-rendering: auto;
   }
 
+  /* P is red, all others white */
+  .gear-letter[data-gear="P"] img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(95%) saturate(7400%) hue-rotate(0deg) brightness(115%) contrast(115%);
+  }
+
+  /* Pulsing animation for balancing arrows */
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .dash-icon.pulsing img {
+    animation: arrowPulse 1.2s ease-in-out infinite;
+  }
+
   @keyframes gearOutLeft { to { transform: translateX(-40px); opacity: 0; } }
   @keyframes gearOutRight { to { transform: translateX(40px); opacity: 0; } }
   @keyframes gearInLeft { from { transform: translateX(40px); opacity: 0; } }
@@ -325,7 +340,7 @@
 
   /* Status inputs */
   .status-inputs {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
   }
   .status-field { display: flex; flex-direction: column; gap: 3px; }
   .status-field label {
@@ -373,7 +388,7 @@
           <div class="screen-page" id="dashScreen">
             <div id="iconContainer"></div>
             <div class="gear-display" id="gearDisplay">
-              <div class="gear-letter" id="gearLetter"><img src="icons/letter.p.png" alt="P"></div>
+              <div class="gear-letter" id="gearLetter" data-gear="P"><img src="icons/letter.p.png" alt="P"></div>
             </div>
             <div class="dash-nav-dots" id="dashDots"></div>
           </div>
@@ -407,6 +422,7 @@
           <button class="preset-btn" onclick="presetDriveMode()">Drive Mode</button>
           <button class="preset-btn" onclick="presetChargeMode()">Charge Mode</button>
           <button class="preset-btn danger" onclick="presetFaultMode()">Fault Mode</button>
+          <button class="preset-btn" onclick="simulateRestart()">Restart</button>
         </div>
       </div>
     </div>
@@ -449,13 +465,13 @@ const ICONS = [
 
   // Row 2
   { id: 'pbrake',       name: 'Parking Brake',  color: 'red',   file: 'parkingsign.brakesignal.png',       x: 24, y: 210, w: 84, h: 57 },
-  { id: 'ev_charger',   name: 'EV Charger',     color: 'amber', file: 'ev.charger.png',                    x: 142, y: 205, w: 69, h: 65 },
+  { id: 'ev_charger',   name: 'Low SOC',        color: 'amber', file: 'ev.charger.png',                    x: 142, y: 205, w: 69, h: 65 },
   { id: 'high_beam',    name: 'High Beam',      color: 'green', file: 'headlight.high.beam.png',           x: 240, y: 210, w: 72, h: 49 },
   { id: 'brake_warn',   name: 'Brake Warning',  color: 'red',   file: 'exclamationmark.brakesignal.png',   x: 365, y: 210, w: 84, h: 57 },
 
   // Row 3 (below gear)
   { id: 'abs',          name: 'ABS',            color: 'amber', file: 'abs.brakesignal.png',               x: 24, y: 492, w: 84, h: 57 },
-  { id: 'engine',       name: 'Engine',         color: 'red',   file: 'engine.combustion.png',             x: 135, y: 498, w: 85, h: 53 },
+  { id: 'engine',       name: 'Engine',         color: 'amber', file: 'engine.combustion.png',             x: 135, y: 498, w: 85, h: 53 },
   { id: 'battery_12v',  name: '12V Battery',    color: 'red',   file: 'minus.plus.batteryblock.png',       x: 255, y: 498, w: 70, h: 54 },
   { id: 'ccs2',         name: 'CCS2 Charger',   color: 'blue',  file: 'charge.ccs2.png',                   x: 365, y: 490, w: 86, h: 64 },
 
@@ -465,14 +481,12 @@ const ICONS = [
   { id: 'thermo_cold',  name: 'Thermo Cold',    color: 'blue',  file: 'thermometer.cold.png',              x: 265, y: 582, w: 62, h: 74 },
   { id: 'book_wrench',  name: 'Book & Wrench',  color: 'amber', file: 'book.and.wrench.png',               x: 365, y: 590, w: 86, h: 63 },
 
-  // Row 5: HV battery warnings + balance
-  { id: 'hv_warn1',     name: 'HV Batt Warn 1', color: 'amber', file: 'hv.batteryblock.warning.png',       x: 130, y: 680, w: 86, h: 67 },
-  { id: 'hv_warn2',     name: 'HV Batt Warn 2', color: 'amber', file: 'hv.batteryblock.warning-1.png',     x: 275, y: 680, w: 86, h: 67 },
-
-  // Row 6: arrows + balance
-  { id: 'batt_balance', name: 'Batt Balance',   color: 'amber', file: 'battery.balance.png',               x: 130, y: 680, w: 86, h: 67 },
-  { id: 'arrow_left',   name: 'Arrow Left',     color: 'amber', file: 'arrow.small. left.png',             x: 218, y: 700, w: 14, h: 16 },
-  { id: 'arrow_right',  name: 'Arrow Right',    color: 'amber', file: 'arrow.small.right.png',             x: 253, y: 700, w: 14, h: 16 },
+  // Bottom: Battery packs with balancing arrows between them
+  // Centered under cols 1-2: [Primary] ◄► [Secondary]
+  { id: 'hv_warn1',     name: 'Primary Pack',   color: 'amber', file: 'hv.batteryblock.warning.png',       x: 110, y: 695, w: 86, h: 67 },
+  { id: 'arrow_left',   name: 'Arrow Left',     color: 'amber', file: 'arrow.small. left.png',             x: 205, y: 718, w: 14, h: 16, isArrow: true },
+  { id: 'arrow_right',  name: 'Arrow Right',    color: 'amber', file: 'arrow.small.right.png',             x: 226, y: 718, w: 14, h: 16, isArrow: true },
+  { id: 'hv_warn2',     name: 'Secondary Pack', color: 'amber', file: 'hv.batteryblock.warning-1.png',     x: 250, y: 695, w: 86, h: 67 },
 ];
 
 // ── State ─────────────────────────────────────────────────────────
@@ -632,7 +646,14 @@ function updateIcon(id) {
   const on = state.icons[id];
   const dashEl = document.getElementById(`dash-${id}`);
   const toggleEl = document.getElementById(`toggle-${id}`);
-  if (dashEl) dashEl.style.opacity = on ? 1.0 : 0.15;
+  if (dashEl) {
+    dashEl.style.opacity = on ? 1.0 : 0.15;
+    // Pulse arrows when active (balancing indicator)
+    const iconDef = ICONS.find(i => i.id === id);
+    if (iconDef && iconDef.isArrow) {
+      dashEl.classList.toggle('pulsing', on);
+    }
+  }
   if (toggleEl) {
     toggleEl.querySelector('.toggle-switch').classList.toggle('on', on);
     toggleEl.classList.toggle('active', on);
@@ -653,6 +674,7 @@ function setGear(g) {
   el.style.animation = `gearOut${goingRight ? 'Left' : 'Right'} 0.2s ease-in forwards`;
 
   setTimeout(() => {
+    el.setAttribute('data-gear', g);
     el.querySelector('img').src = `icons/letter.${g.toLowerCase()}.png`;
     el.querySelector('img').alt = g;
     el.style.animation = `gearIn${goingRight ? 'Left' : 'Right'} 0.2s ease-out forwards`;
@@ -697,7 +719,7 @@ function presetDriveMode() {
 function presetChargeMode() {
   presetAllOff();
   setGear('P');
-  ['ev_charger', 'ccs2', 'arrow_left', 'arrow_right'].forEach(id => setIconState(id, true));
+  ['ev_charger', 'ccs2', 'hv_warn1', 'hv_warn2', 'arrow_left', 'arrow_right'].forEach(id => setIconState(id, true));
   Object.assign(state.status, { soc: 45.2, voltage: 360.8, current: 32.0, range: 175, cellBalance: 'Balancing' });
   updateStatusScreen();
   updateStatusInputs();
@@ -709,6 +731,50 @@ function presetFaultMode() {
   Object.assign(state.status, { health: 62, tempFront: 55, voltageDelta: 0.85, cellBalance: 'FAULT' });
   updateStatusScreen();
   updateStatusInputs();
+}
+
+function simulateRestart() {
+  // Hide dashboard, show splash
+  const slider = document.getElementById('screenSlider');
+  const dashScreen = document.getElementById('dashScreen');
+  const statusScreen = document.getElementById('statusScreen');
+
+  // Create splash overlay
+  const splash = document.createElement('div');
+  splash.id = 'splashOverlay';
+  splash.style.cssText = 'position:absolute;top:0;left:0;width:480px;height:800px;background:#000;display:flex;align-items:center;justify-content:center;z-index:100;';
+
+  // Use the Jaunt logo if available
+  const logo = document.createElement('img');
+  logo.src = '../jaunt.logo.white.jpg';
+  logo.style.cssText = 'width:280px;height:auto;opacity:0;transition:opacity 0.5s ease;';
+  logo.onerror = () => {
+    // Fallback if logo not found
+    splash.innerHTML = '<div style="font-family:JetBrains Mono,monospace;font-size:24px;color:#fff;letter-spacing:4px;opacity:0;transition:opacity 0.5s ease" id="splashText">JAUNT MOTORS</div>';
+    setTimeout(() => {
+      const txt = document.getElementById('splashText');
+      if (txt) txt.style.opacity = '1';
+    }, 100);
+  };
+  splash.appendChild(logo);
+
+  // Reset state
+  presetAllOff();
+  setGear('P');
+  switchScreen(0);
+
+  // Insert splash into the viewport
+  document.querySelector('.screen-viewport').appendChild(splash);
+
+  // Fade in logo
+  setTimeout(() => logo.style.opacity = '1', 100);
+
+  // After 1.5s, fade out splash and show dashboard
+  setTimeout(() => {
+    splash.style.transition = 'opacity 0.4s ease';
+    splash.style.opacity = '0';
+    setTimeout(() => splash.remove(), 400);
+  }, 1500);
 }
 
 function updateStatusInputs() {

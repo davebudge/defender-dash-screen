@@ -37,7 +37,6 @@ LV_IMG_DECLARE(img_book_wrench);
 LV_IMG_DECLARE(img_hv_battery_warn);
 LV_IMG_DECLARE(img_arrow_left);
 LV_IMG_DECLARE(img_arrow_right);
-LV_IMG_DECLARE(img_battery_balance);
 
 #ifdef __cplusplus
 }

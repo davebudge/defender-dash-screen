@@ -56,11 +56,17 @@ static void anim_out_ready_cb(lv_anim_t *a)
     s_animating = false;
 }
 
-static lv_obj_t *create_gear_label(lv_obj_t *parent, const char *text)
+static lv_color_t gear_color(gear_t gear)
+{
+    /* P is red (park), all others white */
+    return (gear == GEAR_P) ? UI_COLOR_RED : UI_COLOR_WHITE;
+}
+
+static lv_obj_t *create_gear_label(lv_obj_t *parent, const char *text, gear_t gear)
 {
     lv_obj_t *label = lv_label_create(parent);
     lv_obj_set_style_text_font(label, &font_eurostile_96, 0);
-    lv_obj_set_style_text_color(label, UI_COLOR_WHITE, 0);
+    lv_obj_set_style_text_color(label, gear_color(gear), 0);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
     lv_label_set_text(label, text);
@@ -76,7 +82,7 @@ void ui_gear_display_create(lv_obj_t *parent)
     /* Clip children so sliding labels don't show outside */
     lv_obj_add_flag(parent, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
 
-    s_gear_label = create_gear_label(parent, "P");
+    s_gear_label = create_gear_label(parent, "P", GEAR_P);
     s_last_gear = GEAR_P;
     s_animating = false;
 
@@ -128,7 +134,7 @@ void ui_gear_display_update(void)
     lv_anim_start(&a_out_opa);
 
     /* ── Incoming animation: new label slides in + fades in ──────── */
-    s_gear_label = create_gear_label(s_gear_parent, GEAR_LETTERS[gear]);
+    s_gear_label = create_gear_label(s_gear_parent, GEAR_LETTERS[gear], gear);
     lv_obj_set_style_opa(s_gear_label, LV_OPA_TRANSP, 0);
 
     /* Get the center X position for alignment */
