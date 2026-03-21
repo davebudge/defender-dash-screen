@@ -148,7 +148,8 @@ vehicle_op_state_t vehicle_state_get_op_state(void);
 /**
  * @brief Set the vehicle operating state (triggers state transitions)
  *
- * OFF→ACC or ACC→ON triggers ADR self-test (3s tell-tale illumination).
+ * OFF→ACC triggers ADR self-test (3s tell-tale illumination).
+ * ON and CHARGE cancel any active self-test; only CAN-driven icons shown.
  * OFF clears all icons. Thread-safe.
  */
 void vehicle_state_set_op_state(vehicle_op_state_t new_state);

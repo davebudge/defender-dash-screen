@@ -418,33 +418,33 @@
 </head>
 <body>
 
-<!-- SVG filters: SAE J578 compliant tell-tale colors, with brightness boost -->
+<!-- SVG filters: SAE J578 compliant tell-tale colors — VIVID/BRIGHT -->
 <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;">
-  <!-- Red: #FF0000 — SAE J578 signal red -->
+  <!-- Red: bright #FF0000 — saturate to white then re-color -->
   <filter id="tint-red" color-interpolation-filters="sRGB">
-    <feColorMatrix type="matrix" values="1.15 0 0 0 0.05
+    <feColorMatrix type="matrix" values="0 0 0 0 1
                                           0 0 0 0 0
                                           0 0 0 0 0
                                           0 0 0 1 0"/>
   </filter>
-  <!-- Amber: #FF8C00 — SAE J578 amber (orange, not yellow) -->
+  <!-- Amber: bright #FFA500 — SAE J578 amber (orange, not yellow) -->
   <filter id="tint-amber" color-interpolation-filters="sRGB">
-    <feColorMatrix type="matrix" values="1.15 0 0 0 0.05
-                                          0 0.62 0 0 0
+    <feColorMatrix type="matrix" values="0 0 0 0 1
+                                          0 0 0 0 0.647
                                           0 0 0 0 0
                                           0 0 0 1 0"/>
   </filter>
-  <!-- Blue: #0066FF — SAE J578 signal blue -->
+  <!-- Blue: bright #0088FF — SAE J578 signal blue -->
   <filter id="tint-blue" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0 0 0 0 0
-                                          0 0.45 0 0 0
-                                          0 0 1.15 0 0.05
+                                          0 0 0 0 0.533
+                                          0 0 0 0 1
                                           0 0 0 1 0"/>
   </filter>
-  <!-- Green: #00CC00 — SAE J578 signal green -->
+  <!-- Green: bright #00FF00 — SAE J578 signal green -->
   <filter id="tint-green" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0 0 0 0 0
-                                          0 0.9 0 0 0.02
+                                          0 0 0 0 1
                                           0 0 0 0 0
                                           0 0 0 1 0"/>
   </filter>
