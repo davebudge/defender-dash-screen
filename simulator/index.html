@@ -13,16 +13,7 @@
     --panel-border: #1e1e24;
     --text: #e0e0e6;
     --text-dim: #6a6a78;
-    --accent: #ff4d00;
-    --red: #ff0000;
-    --amber: #ffa500;
-    --blue: #0099ff;
-    --green: #00ff00;
-    --white: #ffffff;
-    --icon-off: 0.15;
-    --icon-on: 1.0;
     --toggle-bg: #1a1a22;
-    --toggle-on: #2a4a2a;
     --section-bg: #0e0e12;
   }
 
@@ -37,14 +28,9 @@
     overflow: hidden;
   }
 
-  /* ── Layout ──────────────────────────────────────────── */
+  .simulator { display: flex; width: 100vw; height: 100vh; }
 
-  .simulator {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    gap: 0;
-  }
+  /* ── Preview Panel ───────────────────────────────────── */
 
   .preview-panel {
     flex: 0 0 auto;
@@ -125,16 +111,111 @@
   }
   .nav-arrow:hover { border-color: #555; color: var(--text); }
 
-  .nav-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 3px;
-    background: #333;
-    transition: all 0.3s;
+  .ext-dot {
+    width: 6px; height: 6px; border-radius: 3px;
+    background: #333; transition: all 0.3s;
   }
-  .nav-dot.active {
-    width: 18px;
-    background: var(--text);
+  .ext-dot.active { width: 18px; background: var(--text); }
+
+  /* ── Dashboard Icon Grid ─────────────────────────────── */
+
+  .dash-icon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.25s ease;
+  }
+
+  .dash-icon img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  /* Color tinting for white-on-transparent icons */
+  .dash-icon[data-color="red"] img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(95%) saturate(7400%) hue-rotate(0deg) brightness(115%) contrast(115%);
+  }
+  .dash-icon[data-color="amber"] img {
+    filter: brightness(0) saturate(100%) invert(62%) sepia(98%) saturate(1200%) hue-rotate(1deg) brightness(105%) contrast(101%);
+  }
+  .dash-icon[data-color="blue"] img {
+    filter: brightness(0) saturate(100%) invert(42%) sepia(98%) saturate(2000%) hue-rotate(190deg) brightness(115%) contrast(101%);
+  }
+  .dash-icon[data-color="green"] img {
+    filter: brightness(0) saturate(100%) invert(55%) sepia(98%) saturate(5000%) hue-rotate(85deg) brightness(115%) contrast(115%);
+  }
+
+  /* Gear display */
+  .gear-display {
+    position: absolute;
+    left: 0; width: 480px;
+    top: 296px; height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .gear-letter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 128px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+  }
+
+  @keyframes gearOutLeft { to { transform: translateX(-40px); opacity: 0; } }
+  @keyframes gearOutRight { to { transform: translateX(40px); opacity: 0; } }
+  @keyframes gearInLeft { from { transform: translateX(40px); opacity: 0; } }
+  @keyframes gearInRight { from { transform: translateX(-40px); opacity: 0; } }
+
+  /* Nav dots inside screen */
+  .dash-nav-dots {
+    position: absolute;
+    bottom: 12px; left: 0; width: 480px;
+    display: flex; justify-content: center;
+    gap: 8px; align-items: center;
+  }
+  .dash-dot {
+    height: 6px; border-radius: 3px;
+    background: #333; transition: all 0.3s;
+  }
+  .dash-dot.active { width: 18px; background: white; }
+  .dash-dot:not(.active) { width: 6px; }
+
+  /* ── Status Screen ───────────────────────────────────── */
+
+  .status-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid #222;
+    letter-spacing: 1px;
+  }
+
+  .status-rows { padding: 8px 0; }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 24px;
+    border-bottom: 1px solid #161616;
+  }
+
+  .status-row-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: #888; letter-spacing: 0.5px;
+  }
+
+  .status-row-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; font-weight: 600; color: white;
   }
 
   /* ── Control Panel ───────────────────────────────────── */
@@ -149,352 +230,143 @@
   }
 
   .panel-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: flex; align-items: center; gap: 12px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--panel-border);
   }
-
   .panel-header h1 {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
   }
-
   .panel-header .badge {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 1px;
-    padding: 3px 8px;
-    border-radius: 3px;
-    background: #1a1a22;
-    color: var(--text-dim);
-    text-transform: uppercase;
+    font-size: 9px; letter-spacing: 1px; padding: 3px 8px;
+    border-radius: 3px; background: #1a1a22;
+    color: var(--text-dim); text-transform: uppercase;
   }
 
   .section {
     background: var(--section-bg);
     border: 1px solid var(--panel-border);
-    border-radius: 6px;
-    overflow: hidden;
+    border-radius: 6px; overflow: hidden;
   }
-
   .section-header {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
+    font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-dim);
     padding: 12px 16px 8px;
     border-bottom: 1px solid var(--panel-border);
   }
-
   .section-body { padding: 12px 16px; }
 
-  /* ── Warning Light Toggles ───────────────────────────── */
-
+  /* Icon toggles */
   .icon-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
   }
-
   .icon-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 4px;
+    cursor: pointer; transition: background 0.15s;
     user-select: none;
   }
   .icon-toggle:hover { background: #1a1a22; }
 
   .toggle-switch {
-    width: 32px;
-    height: 16px;
-    border-radius: 8px;
-    background: var(--toggle-bg);
-    position: relative;
-    flex-shrink: 0;
-    transition: background 0.2s;
+    width: 32px; height: 16px; border-radius: 8px;
+    background: var(--toggle-bg); position: relative;
+    flex-shrink: 0; transition: background 0.2s;
     border: 1px solid #2a2a32;
   }
   .toggle-switch::after {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #555;
-    top: 1px;
-    left: 1px;
+    content: ''; position: absolute;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #555; top: 1px; left: 1px;
     transition: all 0.2s;
   }
-  .toggle-switch.on { background: var(--toggle-on); border-color: #3a6a3a; }
-  .toggle-switch.on::after { left: 17px; background: #5a5; }
-
+  .toggle-switch.on { border-color: #3a6a3a; }
+  .toggle-switch.on::after { left: 17px; }
   .toggle-switch.on[data-color="red"] { background: #3a1a1a; border-color: #6a2a2a; }
-  .toggle-switch.on[data-color="red"]::after { background: var(--red); }
+  .toggle-switch.on[data-color="red"]::after { background: #ff0000; }
   .toggle-switch.on[data-color="amber"] { background: #3a2a0a; border-color: #6a4a1a; }
-  .toggle-switch.on[data-color="amber"]::after { background: var(--amber); }
+  .toggle-switch.on[data-color="amber"]::after { background: #ffa500; }
   .toggle-switch.on[data-color="blue"] { background: #0a2a3a; border-color: #1a4a6a; }
-  .toggle-switch.on[data-color="blue"]::after { background: var(--blue); }
+  .toggle-switch.on[data-color="blue"]::after { background: #0099ff; }
   .toggle-switch.on[data-color="green"] { background: #0a3a1a; border-color: #1a6a2a; }
-  .toggle-switch.on[data-color="green"]::after { background: var(--green); }
+  .toggle-switch.on[data-color="green"]::after { background: #00ff00; }
 
   .toggle-label {
-    font-size: 11px;
-    color: var(--text-dim);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 10px; color: var(--text-dim);
   }
   .icon-toggle.active .toggle-label { color: var(--text); }
 
-  /* ── Gear Selector ───────────────────────────────────── */
-
-  .gear-buttons {
-    display: flex;
-    gap: 4px;
-  }
-
+  /* Gear buttons */
+  .gear-buttons { display: flex; gap: 4px; }
   .gear-btn {
-    flex: 1;
-    padding: 10px 0;
+    flex: 1; padding: 10px 0;
     background: var(--toggle-bg);
-    border: 1px solid #2a2a32;
-    border-radius: 4px;
+    border: 1px solid #2a2a32; border-radius: 4px;
     color: var(--text-dim);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
   }
   .gear-btn:hover { border-color: #444; color: var(--text); }
   .gear-btn.active {
-    background: #1a1a2a;
-    border-color: var(--white);
-    color: var(--white);
-    box-shadow: 0 0 12px rgba(255,255,255,0.1);
+    background: #1a1a2a; border-color: white;
+    color: white; box-shadow: 0 0 12px rgba(255,255,255,0.1);
   }
 
-  /* ── Status Inputs ───────────────────────────────────── */
-
+  /* Status inputs */
   .status-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
   }
-
-  .status-field {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
+  .status-field { display: flex; flex-direction: column; gap: 3px; }
   .status-field label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
+    font-size: 9px; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--text-dim);
   }
-
   .status-field input, .status-field select {
     background: var(--toggle-bg);
-    border: 1px solid #2a2a32;
-    border-radius: 3px;
-    color: var(--text);
-    padding: 6px 8px;
+    border: 1px solid #2a2a32; border-radius: 3px;
+    color: var(--text); padding: 6px 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    outline: none;
-    transition: border-color 0.15s;
+    font-size: 12px; outline: none;
   }
-  .status-field input:focus, .status-field select:focus { border-color: #555; }
+  .status-field input:focus { border-color: #555; }
 
-  /* ── Preset Buttons ──────────────────────────────────── */
-
-  .preset-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
+  /* Preset buttons */
+  .preset-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
   .preset-btn {
-    padding: 7px 14px;
-    background: var(--toggle-bg);
-    border: 1px solid #2a2a32;
-    border-radius: 4px;
+    padding: 7px 14px; background: var(--toggle-bg);
+    border: 1px solid #2a2a32; border-radius: 4px;
     color: var(--text-dim);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    cursor: pointer;
+    font-size: 10px; letter-spacing: 0.5px;
+    text-transform: uppercase; cursor: pointer;
     transition: all 0.15s;
   }
   .preset-btn:hover { border-color: #555; color: var(--text); background: #1a1a22; }
   .preset-btn.danger { border-color: #3a1a1a; }
-  .preset-btn.danger:hover { border-color: #6a2a2a; background: #1a0a0a; color: var(--red); }
+  .preset-btn.danger:hover { border-color: #6a2a2a; background: #1a0a0a; color: #ff0000; }
 
-  /* ── Dashboard Screen Rendering ──────────────────────── */
-
-  .dash-icon {
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s;
-  }
-
-  .dash-icon svg {
-    width: 48px;
-    height: 48px;
-  }
-
-  .gear-display {
-    position: absolute;
-    width: 480px;
-    top: 310px;
-    height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .gear-letter {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 120px;
-    font-weight: 700;
-    color: white;
-    line-height: 1;
-    transition: none;
-  }
-
-  .gear-letter.anim-out {
-    animation: gearOut 0.2s ease-in forwards;
-  }
-  .gear-letter.anim-in {
-    animation: gearIn 0.2s ease-out forwards;
-  }
-
-  @keyframes gearOutLeft {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(-40px); opacity: 0; }
-  }
-  @keyframes gearOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(40px); opacity: 0; }
-  }
-  @keyframes gearInLeft {
-    from { transform: translateX(40px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-  @keyframes gearInRight {
-    from { transform: translateX(-40px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-
-  .dash-nav-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 480px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .dash-dot {
-    height: 6px;
-    border-radius: 3px;
-    background: #333;
-    transition: all 0.3s;
-  }
-  .dash-dot.active { width: 18px; background: white; }
-  .dash-dot:not(.active) { width: 6px; }
-
-  /* ── Status Screen ───────────────────────────────────── */
-
-  .status-screen { padding: 0; }
-
-  .status-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    padding: 20px 24px 12px;
-    border-bottom: 1px solid #222;
-    letter-spacing: 1px;
-  }
-
-  .status-rows {
-    padding: 8px 0;
-    overflow-y: auto;
-    max-height: 700px;
-  }
-
-  .status-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 24px;
-    border-bottom: 1px solid #161616;
-  }
-
-  .status-row-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: #888;
-    letter-spacing: 0.5px;
-  }
-
-  .status-row-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-    color: white;
-  }
-
-  .status-nav-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 480px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    align-items: center;
-  }
-
-  /* ── Scrollbar ───────────────────────────────────────── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #2a2a32; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3a42; }
 </style>
 </head>
 <body>
 
 <div class="simulator">
-  <!-- Preview Panel -->
   <div class="preview-panel">
     <div class="preview-label">480 × 800 &nbsp;·&nbsp; ESP32-S3 Preview</div>
     <div class="screen-frame">
       <div class="screen-viewport">
         <div class="screen-slider" id="screenSlider">
-
-          <!-- Screen 1: Warning Lights + Gear -->
           <div class="screen-page" id="dashScreen">
             <div id="iconContainer"></div>
             <div class="gear-display" id="gearDisplay">
@@ -502,33 +374,27 @@
             </div>
             <div class="dash-nav-dots" id="dashDots"></div>
           </div>
-
-          <!-- Screen 2: Vehicle Status -->
           <div class="screen-page" id="statusScreen">
             <div class="status-title">VEHICLE STATUS</div>
             <div class="status-rows" id="statusRows"></div>
-            <div class="status-nav-dots" id="statusDots"></div>
+            <div class="dash-nav-dots" id="statusDots"></div>
           </div>
-
         </div>
       </div>
     </div>
     <div class="screen-nav">
       <button class="nav-arrow" onclick="switchScreen(0)">‹</button>
-      <div class="nav-dot active" id="extDot0"></div>
-      <div class="nav-dot" id="extDot1"></div>
+      <div class="ext-dot active" id="extDot0"></div>
+      <div class="ext-dot" id="extDot1"></div>
       <button class="nav-arrow" onclick="switchScreen(1)">›</button>
     </div>
   </div>
 
-  <!-- Control Panel -->
   <div class="control-panel">
     <div class="panel-header">
       <h1>CAN Bus Simulator</h1>
       <span class="badge">Defender Puma</span>
     </div>
-
-    <!-- Presets -->
     <div class="section">
       <div class="section-header">Presets</div>
       <div class="section-body">
@@ -541,89 +407,70 @@
         </div>
       </div>
     </div>
-
-    <!-- Gear Selector -->
     <div class="section">
       <div class="section-header">Gear Selector</div>
-      <div class="section-body">
-        <div class="gear-buttons" id="gearButtons"></div>
-      </div>
+      <div class="section-body"><div class="gear-buttons" id="gearButtons"></div></div>
     </div>
-
-    <!-- Warning Lights -->
     <div class="section">
       <div class="section-header">Warning Lights</div>
-      <div class="section-body">
-        <div class="icon-grid" id="iconToggles"></div>
-      </div>
+      <div class="section-body"><div class="icon-grid" id="iconToggles"></div></div>
     </div>
-
-    <!-- Vehicle Status -->
     <div class="section">
       <div class="section-header">Vehicle Status Data</div>
-      <div class="section-body">
-        <div class="status-inputs" id="statusInputs"></div>
-      </div>
+      <div class="section-body"><div class="status-inputs" id="statusInputs"></div></div>
     </div>
   </div>
 </div>
 
 <script>
-// ── Icon Definitions (matches icon_defs.c) ────────────────────────
-
-const COLORS = { red: '#ff0000', amber: '#ffa500', blue: '#0099ff', green: '#00ff00' };
+/*
+ * Icon definitions - positions match the Figma design exactly.
+ * Using the actual Figma-exported PNG images.
+ *
+ * Layout reference (480x800 portrait):
+ *   Rows 0-2:  y ~25 to ~280  (top icon grid)
+ *   Gear:      y ~296 to ~476 (center)
+ *   Rows 3-6:  y ~490 to ~760 (bottom icon grid)
+ */
 
 const ICONS = [
-  { id: 'hvil', name: 'HVIL', color: 'red', row: 0, col: 0, svg: 'hvil' },
-  { id: 'cup_heat', name: 'Cup Heat', color: 'amber', row: 0, col: 3, svg: 'cup' },
-  { id: 'pbrake_slash', name: 'PBrake Slash', color: 'red', row: 1, col: 0, svg: 'pbrake_slash' },
-  { id: 'seatbelt', name: 'Seatbelt', color: 'red', row: 1, col: 1, svg: 'seatbelt' },
-  { id: 'parking_light', name: 'Parking Light', color: 'blue', row: 1, col: 2, svg: 'park_light' },
-  { id: 'hazard', name: 'Hazard', color: 'red', row: 1, col: 3, svg: 'hazard' },
-  { id: 'pbrake', name: 'Parking Brake', color: 'red', row: 2, col: 0, svg: 'pbrake' },
-  { id: 'ev_charger', name: 'EV Charger', color: 'amber', row: 2, col: 1, svg: 'ev_charger' },
-  { id: 'high_beam', name: 'High Beam', color: 'green', row: 2, col: 2, svg: 'high_beam' },
-  { id: 'brake_warn', name: 'Brake Warning', color: 'red', row: 2, col: 3, svg: 'brake_warn' },
-  { id: 'abs', name: 'ABS', color: 'amber', row: 3, col: 0, svg: 'abs' },
-  { id: 'engine', name: 'Engine', color: 'red', row: 3, col: 1, svg: 'engine' },
-  { id: 'battery_12v', name: '12V Battery', color: 'red', row: 3, col: 2, svg: 'battery' },
-  { id: 'ccs2', name: 'CCS2 Charger', color: 'blue', row: 3, col: 3, svg: 'ccs2' },
-  { id: 'traction', name: 'Traction Ctrl', color: 'amber', row: 4, col: 0, svg: 'traction' },
-  { id: 'thermo_hot', name: 'Thermo Hot', color: 'red', row: 4, col: 1, svg: 'thermo_hot' },
-  { id: 'thermo_cold', name: 'Thermo Cold', color: 'blue', row: 4, col: 2, svg: 'thermo_cold' },
-  { id: 'book_wrench', name: 'Book & Wrench', color: 'amber', row: 4, col: 3, svg: 'book' },
-  { id: 'hv_warn1', name: 'HV Batt Warn 1', color: 'amber', row: 5, col: 0, svg: 'hv_batt' },
-  { id: 'hv_warn2', name: 'HV Batt Warn 2', color: 'amber', row: 5, col: 1, svg: 'hv_batt' },
-  { id: 'batt_balance', name: 'Batt Balance', color: 'amber', row: 5, col: 2, svg: 'hv_batt' },
-  { id: 'arrow_left', name: 'Arrow Left', color: 'amber', row: 6, col: 1, svg: 'arrow_l' },
-  { id: 'arrow_right', name: 'Arrow Right', color: 'amber', row: 6, col: 2, svg: 'arrow_r' },
+  // Row 0: top row - wide spacing, only 2 icons
+  { id: 'hvil',         name: 'HVIL',           color: 'red',   file: 'hvil.png',           x: 24, y: 25,  w: 84, h: 63 },
+  { id: 'cup_heat',     name: 'Cup Heat',       color: 'amber', file: 'cup.and.heat.waves 1.png', x: 375, y: 20, w: 68, h: 68 },
+
+  // Row 1
+  { id: 'pbrake_slash', name: 'PBrake Slash',   color: 'red',   file: 'parkingsign.brakesignal.slash.png', x: 24, y: 115, w: 84, h: 75 },
+  { id: 'seatbelt',     name: 'Seatbelt',       color: 'red',   file: 'figure.seated.seatbelt.png',        x: 145, y: 110, w: 50, h: 72 },
+  { id: 'parking_light',name: 'Parking Light',  color: 'blue',  file: 'parkinglight.png',                  x: 245, y: 120, w: 78, h: 55 },
+  { id: 'hazard',       name: 'Hazard',         color: 'red',   file: 'hazardsign.png',                    x: 370, y: 115, w: 52, h: 47 },
+
+  // Row 2
+  { id: 'pbrake',       name: 'Parking Brake',  color: 'red',   file: 'parkingsign.brakesignal.png',       x: 24, y: 210, w: 84, h: 57 },
+  { id: 'ev_charger',   name: 'EV Charger',     color: 'amber', file: 'ev.charger.png',                    x: 142, y: 205, w: 69, h: 65 },
+  { id: 'high_beam',    name: 'High Beam',      color: 'green', file: 'headlight.high.beam.png',           x: 240, y: 210, w: 72, h: 49 },
+  { id: 'brake_warn',   name: 'Brake Warning',  color: 'red',   file: 'exclamationmark.brakesignal.png',   x: 365, y: 210, w: 84, h: 57 },
+
+  // Row 3 (below gear)
+  { id: 'abs',          name: 'ABS',            color: 'amber', file: 'abs.brakesignal.png',               x: 24, y: 492, w: 84, h: 57 },
+  { id: 'engine',       name: 'Engine',         color: 'red',   file: 'engine.combustion.png',             x: 135, y: 498, w: 85, h: 53 },
+  { id: 'battery_12v',  name: '12V Battery',    color: 'red',   file: 'minus.plus.batteryblock.png',       x: 255, y: 498, w: 70, h: 54 },
+  { id: 'ccs2',         name: 'CCS2 Charger',   color: 'blue',  file: 'charge.ccs2.png',                   x: 365, y: 490, w: 86, h: 64 },
+
+  // Row 4
+  { id: 'traction',     name: 'Traction Ctrl',  color: 'amber', file: 'traction.control.tirepressure.png', x: 30, y: 587, w: 60, h: 58 },
+  { id: 'thermo_hot',   name: 'Thermo Hot',     color: 'red',   file: 'thermometer.hot.png',               x: 145, y: 582, w: 62, h: 74 },
+  { id: 'thermo_cold',  name: 'Thermo Cold',    color: 'blue',  file: 'thermometer.cold.png',              x: 265, y: 582, w: 62, h: 74 },
+  { id: 'book_wrench',  name: 'Book & Wrench',  color: 'amber', file: 'book.and.wrench.png',               x: 365, y: 590, w: 86, h: 63 },
+
+  // Row 5: HV battery warnings + balance
+  { id: 'hv_warn1',     name: 'HV Batt Warn 1', color: 'amber', file: 'hv.batteryblock.warning.png',       x: 130, y: 680, w: 86, h: 67 },
+  { id: 'hv_warn2',     name: 'HV Batt Warn 2', color: 'amber', file: 'hv.batteryblock.warning-1.png',     x: 275, y: 680, w: 86, h: 67 },
+
+  // Row 6: arrows + balance
+  { id: 'batt_balance', name: 'Batt Balance',   color: 'amber', file: 'battery.balance.png',               x: 130, y: 680, w: 86, h: 67 },
+  { id: 'arrow_left',   name: 'Arrow Left',     color: 'amber', file: 'arrow.small. left.png',             x: 218, y: 700, w: 14, h: 16 },
+  { id: 'arrow_right',  name: 'Arrow Right',    color: 'amber', file: 'arrow.small.right.png',             x: 253, y: 700, w: 14, h: 16 },
 ];
-
-// ── SVG Icon Library ──────────────────────────────────────────────
-
-const SVG_ICONS = {
-  hvil: `<text x="24" y="32" font-family="monospace" font-size="16" font-weight="bold" fill="currentColor" text-anchor="middle">HVIL</text><ellipse cx="24" cy="28" rx="22" ry="16" stroke="currentColor" fill="none" stroke-width="2.5"/>`,
-  cup: `<path d="M10 14h20v18c0 4-4 8-10 8s-10-4-10-8V14z" stroke="currentColor" fill="none" stroke-width="2"/><path d="M30 18h4c2 0 4 2 4 4s-2 4-4 4h-4" stroke="currentColor" fill="none" stroke-width="2"/><path d="M14 8c0-3 2-5 3-6M20 8c0-3 2-5 3-6M26 8c0-3 2-5 3-6" stroke="currentColor" fill="none" stroke-width="1.5"/>`,
-  pbrake_slash: `<circle cx="24" cy="24" r="18" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="24" r="12" stroke="currentColor" fill="none" stroke-width="2"/><text x="24" y="29" font-family="monospace" font-size="14" font-weight="bold" fill="currentColor" text-anchor="middle">P</text><line x1="8" y1="40" x2="40" y2="8" stroke="currentColor" stroke-width="2.5"/>`,
-  seatbelt: `<circle cx="24" cy="10" r="5" stroke="currentColor" fill="none" stroke-width="2"/><path d="M18 18c0 0 2 4 2 14h8c0-10 2-14 2-14" stroke="currentColor" fill="none" stroke-width="2"/><line x1="20" y1="18" x2="32" y2="32" stroke="currentColor" stroke-width="2.5"/>`,
-  park_light: `<path d="M12 20h-4v8h4M36 20h4v8h-4" stroke="currentColor" fill="none" stroke-width="2"/><rect x="12" y="16" width="24" height="16" rx="3" stroke="currentColor" fill="none" stroke-width="2"/><line x1="6" y1="22" x2="2" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="26" x2="2" y2="28" stroke="currentColor" stroke-width="1.5"/><line x1="42" y1="22" x2="46" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="42" y1="26" x2="46" y2="28" stroke="currentColor" stroke-width="1.5"/>`,
-  hazard: `<path d="M24 6L4 42h40L24 6z" stroke="currentColor" fill="none" stroke-width="2.5"/><text x="24" y="36" font-family="monospace" font-size="18" font-weight="bold" fill="currentColor" text-anchor="middle">!</text>`,
-  pbrake: `<circle cx="24" cy="24" r="18" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="24" r="12" stroke="currentColor" fill="none" stroke-width="2"/><text x="24" y="29" font-family="monospace" font-size="14" font-weight="bold" fill="currentColor" text-anchor="middle">P</text>`,
-  ev_charger: `<rect x="14" y="8" width="16" height="24" rx="2" stroke="currentColor" fill="none" stroke-width="2"/><path d="M32 20h4v8" stroke="currentColor" fill="none" stroke-width="2"/><path d="M22 14v6l-4 4v6" stroke="currentColor" stroke-width="2.5" fill="none"/><circle cx="22" cy="38" r="4" stroke="currentColor" fill="none" stroke-width="2"/>`,
-  high_beam: `<path d="M8 24c0-8 7-16 16-16" stroke="currentColor" fill="none" stroke-width="2.5"/><path d="M8 24c0 8 7 16 16 16" stroke="currentColor" fill="none" stroke-width="2.5"/><line x1="28" y1="14" x2="44" y2="14" stroke="currentColor" stroke-width="2"/><line x1="28" y1="20" x2="44" y2="20" stroke="currentColor" stroke-width="2"/><line x1="28" y1="26" x2="44" y2="26" stroke="currentColor" stroke-width="2"/><line x1="28" y1="32" x2="44" y2="32" stroke="currentColor" stroke-width="2"/>`,
-  brake_warn: `<circle cx="24" cy="24" r="18" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="24" r="12" stroke="currentColor" fill="none" stroke-width="2"/><text x="24" y="29" font-family="monospace" font-size="16" font-weight="bold" fill="currentColor" text-anchor="middle">!</text>`,
-  abs: `<circle cx="24" cy="24" r="18" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="24" r="12" stroke="currentColor" fill="none" stroke-width="2"/><text x="24" y="30" font-family="monospace" font-size="11" font-weight="bold" fill="currentColor" text-anchor="middle">ABS</text>`,
-  engine: `<path d="M10 16h6v-4h4v4h8v-4h4v4h6v16h-6v4h-4v-4h-8v4h-4v-4h-6z" stroke="currentColor" fill="none" stroke-width="2"/><rect x="16" y="20" width="4" height="8" fill="currentColor" opacity="0.5"/><rect x="24" y="20" width="4" height="8" fill="currentColor" opacity="0.5"/>`,
-  battery: `<rect x="8" y="16" width="32" height="20" rx="2" stroke="currentColor" fill="none" stroke-width="2.5"/><rect x="40" y="22" width="4" height="8" rx="1" fill="currentColor"/><text x="16" y="30" font-size="12" font-weight="bold" fill="currentColor">-</text><text x="30" y="30" font-size="12" font-weight="bold" fill="currentColor">+</text>`,
-  ccs2: `<rect x="12" y="8" width="24" height="20" rx="4" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="20" cy="16" r="3" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="28" cy="16" r="3" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="20" cy="36" r="3" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="28" cy="36" r="3" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M16 28h16" stroke="currentColor" stroke-width="2"/>`,
-  traction: `<path d="M12 40l8-16 8 8 8-16" stroke="currentColor" fill="none" stroke-width="2.5"/><text x="24" y="14" font-family="monospace" font-size="11" font-weight="bold" fill="currentColor" text-anchor="middle">TC</text>`,
-  thermo_hot: `<path d="M24 8v24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="36" r="8" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="36" r="4" fill="currentColor"/><path d="M32 12l4-2M32 18l4-2M32 24l4-2" stroke="currentColor" stroke-width="1.5"/>`,
-  thermo_cold: `<path d="M24 8v24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="36" r="8" stroke="currentColor" fill="none" stroke-width="2.5"/><circle cx="24" cy="36" r="4" fill="currentColor"/><path d="M32 14l4 0M30 20l6 0M32 26l4 0" stroke="currentColor" stroke-width="1.5"/>`,
-  book: `<path d="M8 8h14c2 0 4 2 4 4v28c-2-2-4-3-6-3H8V8z" stroke="currentColor" fill="none" stroke-width="2"/><path d="M40 8H26c-2 0-4 2-4 4v28c2-2 4-3 6-3h12V8z" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="30" cy="22" r="5" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M34 26l3 3" stroke="currentColor" stroke-width="1.5"/>`,
-  hv_batt: `<rect x="8" y="12" width="32" height="24" rx="2" stroke="currentColor" fill="none" stroke-width="2.5"/><rect x="40" y="20" width="4" height="8" rx="1" fill="currentColor"/><path d="M22 18v12M16 24h12" stroke="currentColor" stroke-width="2"/><path d="M26 6l4 6h-8l4-6z" fill="currentColor"/>`,
-  arrow_l: `<path d="M30 12L18 24L30 36" stroke="currentColor" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
-  arrow_r: `<path d="M18 12L30 24L18 36" stroke="currentColor" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
-};
 
 // ── State ─────────────────────────────────────────────────────────
 
@@ -640,73 +487,58 @@ const state = {
     firmware: 'v2.3.1'
   }
 };
-
 ICONS.forEach(i => state.icons[i.id] = false);
 
-// ── Grid Layout ───────────────────────────────────────────────────
-
-const CELL_W = 120, CELL_H = 90, ICON_SZ = 64;
-const TOP_Y = 10, TOP_ROWS = 3, GAP_Y = 470;
-
-function iconPos(row, col) {
-  let baseY, localRow;
-  if (row < TOP_ROWS) {
-    baseY = TOP_Y;
-    localRow = row;
-  } else {
-    baseY = GAP_Y;
-    localRow = row - TOP_ROWS;
-  }
-  return {
-    x: col * CELL_W + (CELL_W - ICON_SZ) / 2,
-    y: baseY + localRow * CELL_H + (CELL_H - ICON_SZ) / 2
-  };
-}
-
-// ── Build Dashboard Icons ─────────────────────────────────────────
+// ── Build Dashboard ───────────────────────────────────────────────
 
 function buildDashboard() {
   const container = document.getElementById('iconContainer');
+
   ICONS.forEach(icon => {
-    const pos = iconPos(icon.row, icon.col);
     const div = document.createElement('div');
     div.className = 'dash-icon';
     div.id = `dash-${icon.id}`;
-    div.style.left = pos.x + 'px';
-    div.style.top = pos.y + 'px';
-    div.style.color = COLORS[icon.color];
+    div.style.left = icon.x + 'px';
+    div.style.top = icon.y + 'px';
+    div.style.width = icon.w + 'px';
+    div.style.height = icon.h + 'px';
     div.style.opacity = 0.15;
-    div.innerHTML = `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">${SVG_ICONS[icon.svg]}</svg>`;
+    div.setAttribute('data-color', icon.color);
+
+    const img = document.createElement('img');
+    img.src = `icons/${icon.file}`;
+    img.alt = icon.name;
+    img.draggable = false;
+    div.appendChild(img);
+
     container.appendChild(div);
   });
 
-  // Build nav dots for both screens
-  [['dashDots', 0], ['statusDots', 1]].forEach(([id, activeOnScreen]) => {
-    const dotsEl = document.getElementById(id);
+  // Nav dots
+  ['dashDots', 'statusDots'].forEach(id => {
+    const el = document.getElementById(id);
     for (let i = 0; i < 2; i++) {
       const dot = document.createElement('div');
       dot.className = 'dash-dot';
-      dotsEl.appendChild(dot);
+      el.appendChild(dot);
     }
   });
-  updateDashDots();
+  updateDots();
 }
 
 // ── Build Controls ────────────────────────────────────────────────
 
 function buildControls() {
-  // Icon toggles
   const grid = document.getElementById('iconToggles');
   ICONS.forEach(icon => {
-    const toggle = document.createElement('div');
-    toggle.className = 'icon-toggle';
-    toggle.id = `toggle-${icon.id}`;
-    toggle.innerHTML = `<div class="toggle-switch" data-color="${icon.color}"></div><span class="toggle-label">${icon.name}</span>`;
-    toggle.onclick = () => toggleIcon(icon.id);
-    grid.appendChild(toggle);
+    const t = document.createElement('div');
+    t.className = 'icon-toggle';
+    t.id = `toggle-${icon.id}`;
+    t.innerHTML = `<div class="toggle-switch" data-color="${icon.color}"></div><span class="toggle-label">${icon.name}</span>`;
+    t.onclick = () => toggleIcon(icon.id);
+    grid.appendChild(t);
   });
 
-  // Gear buttons
   const gearDiv = document.getElementById('gearButtons');
   'PRNDS'.split('').forEach(g => {
     const btn = document.createElement('button');
@@ -717,30 +549,27 @@ function buildControls() {
     gearDiv.appendChild(btn);
   });
 
-  // Status inputs
   const statusDiv = document.getElementById('statusInputs');
-  const fields = [
-    { key: 'soc', label: 'State of Charge (%)', type: 'number', step: 0.1 },
-    { key: 'voltage', label: 'Battery Voltage (V)', type: 'number', step: 0.1 },
-    { key: 'current', label: 'Battery Current (A)', type: 'number', step: 0.1 },
+  [
+    { key: 'soc', label: 'SOC (%)', type: 'number', step: 0.1 },
+    { key: 'voltage', label: 'Voltage (V)', type: 'number', step: 0.1 },
+    { key: 'current', label: 'Current (A)', type: 'number', step: 0.1 },
     { key: 'tempFront', label: 'Temp Front (°C)', type: 'number', step: 1 },
     { key: 'tempRear', label: 'Temp Rear (°C)', type: 'number', step: 1 },
-    { key: 'voltageDelta', label: 'Voltage Delta (V)', type: 'number', step: 0.01 },
+    { key: 'voltageDelta', label: 'V Delta (V)', type: 'number', step: 0.01 },
     { key: 'cellBalance', label: 'Cell Balance', type: 'text' },
     { key: 'chargeCycles', label: 'Charge Cycles', type: 'number', step: 1 },
-    { key: 'health', label: 'Battery Health (%)', type: 'number', step: 1 },
+    { key: 'health', label: 'Health (%)', type: 'number', step: 1 },
     { key: 'maxDischargeCurrent', label: 'Max Discharge (A)', type: 'number', step: 1 },
     { key: 'range', label: 'Range (km)', type: 'number', step: 1 },
     { key: 'lastCharged', label: 'Last Charged', type: 'date' },
     { key: 'nextMaint', label: 'Next Maint', type: 'date' },
     { key: 'firmware', label: 'Firmware', type: 'text' },
-  ];
-
-  fields.forEach(f => {
+  ].forEach(f => {
     const div = document.createElement('div');
     div.className = 'status-field';
     div.innerHTML = `<label>${f.label}</label><input type="${f.type}" value="${state.status[f.key]}" ${f.step ? `step="${f.step}"` : ''} data-key="${f.key}">`;
-    div.querySelector('input').oninput = (e) => {
+    div.querySelector('input').oninput = e => {
       state.status[f.key] = f.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
       updateStatusScreen();
     };
@@ -750,26 +579,26 @@ function buildControls() {
 
 // ── Build Status Screen ───────────────────────────────────────────
 
+const STATUS_FIELDS = [
+  ['soc', 'STATE OF CHARGE', v => v.toFixed(1) + '%'],
+  ['voltage', 'BATTERY VOLTAGE', v => v.toFixed(1) + 'V'],
+  ['current', 'BATTERY CURRENT', v => v.toFixed(1) + 'A'],
+  ['tempFront', 'BATTERY TEMP FRONT', v => v + '°C'],
+  ['tempRear', 'BATTERY TEMP REAR', v => v + '°C'],
+  ['voltageDelta', 'BATTERY PACK VOLTAGE DELTA', v => v.toFixed(2) + 'V'],
+  ['cellBalance', 'CELL BALANCE', v => v],
+  ['chargeCycles', 'CHARGE CYCLES', v => v],
+  ['health', 'BATTERY HEALTH', v => v + '%'],
+  ['maxDischargeCurrent', 'MAX DISCHARGE CURRENT', v => v + 'A'],
+  ['range', 'ESTIMATED REMAINING RANGE', v => v + '  km'],
+  ['lastCharged', 'LAST CHARGED DATE', v => v],
+  ['nextMaint', 'NEXT MAINTENANCE DUE', v => v],
+  ['firmware', 'FIRMWARE VERSION', v => v],
+];
+
 function buildStatusScreen() {
   const rows = document.getElementById('statusRows');
-  const labels = [
-    ['soc', 'STATE OF CHARGE', v => v.toFixed(1) + '%'],
-    ['voltage', 'BATTERY VOLTAGE', v => v.toFixed(1) + 'V'],
-    ['current', 'BATTERY CURRENT', v => v.toFixed(1) + 'A'],
-    ['tempFront', 'BATTERY TEMP FRONT', v => v + '°C'],
-    ['tempRear', 'BATTERY TEMP REAR', v => v + '°C'],
-    ['voltageDelta', 'BATTERY PACK VOLTAGE DELTA', v => v.toFixed(2) + 'V'],
-    ['cellBalance', 'CELL BALANCE', v => v],
-    ['chargeCycles', 'CHARGE CYCLES', v => v],
-    ['health', 'BATTERY HEALTH', v => v + '%'],
-    ['maxDischargeCurrent', 'MAX DISCHARGE CURRENT', v => v + 'A'],
-    ['range', 'ESTIMATED REMAINING RANGE', v => v + '  km'],
-    ['lastCharged', 'LAST CHARGED DATE', v => v],
-    ['nextMaint', 'NEXT MAINTENANCE DUE', v => v],
-    ['firmware', 'FIRMWARE VERSION', v => v],
-  ];
-
-  labels.forEach(([key, label, fmt]) => {
+  STATUS_FIELDS.forEach(([key, label, fmt]) => {
     const row = document.createElement('div');
     row.className = 'status-row';
     row.innerHTML = `<span class="status-row-label">${label}</span><span class="status-row-value" id="sv-${key}">${fmt(state.status[key])}</span>`;
@@ -778,29 +607,13 @@ function buildStatusScreen() {
 }
 
 function updateStatusScreen() {
-  const fmts = {
-    soc: v => v.toFixed(1) + '%',
-    voltage: v => v.toFixed(1) + 'V',
-    current: v => v.toFixed(1) + 'A',
-    tempFront: v => v + '°C',
-    tempRear: v => v + '°C',
-    voltageDelta: v => v.toFixed(2) + 'V',
-    cellBalance: v => v,
-    chargeCycles: v => v,
-    health: v => v + '%',
-    maxDischargeCurrent: v => v + 'A',
-    range: v => v + '  km',
-    lastCharged: v => v,
-    nextMaint: v => v,
-    firmware: v => v,
-  };
-  Object.keys(fmts).forEach(k => {
-    const el = document.getElementById(`sv-${k}`);
-    if (el) el.textContent = fmts[k](state.status[k]);
+  STATUS_FIELDS.forEach(([key, , fmt]) => {
+    const el = document.getElementById(`sv-${key}`);
+    if (el) el.textContent = fmt(state.status[key]);
   });
 }
 
-// ── Icon Toggle ───────────────────────────────────────────────────
+// ── Icon Control ──────────────────────────────────────────────────
 
 function toggleIcon(id) {
   state.icons[id] = !state.icons[id];
@@ -816,11 +629,9 @@ function updateIcon(id) {
   const on = state.icons[id];
   const dashEl = document.getElementById(`dash-${id}`);
   const toggleEl = document.getElementById(`toggle-${id}`);
-
   if (dashEl) dashEl.style.opacity = on ? 1.0 : 0.15;
   if (toggleEl) {
-    const sw = toggleEl.querySelector('.toggle-switch');
-    sw.classList.toggle('on', on);
+    toggleEl.querySelector('.toggle-switch').classList.toggle('on', on);
     toggleEl.classList.toggle('active', on);
   }
 }
@@ -829,27 +640,19 @@ function updateIcon(id) {
 
 function setGear(g) {
   if (g === state.gear) return;
-  const oldGear = state.gear;
   const gears = 'PRNDS';
-  const oldIdx = gears.indexOf(oldGear);
-  const newIdx = gears.indexOf(g);
-  const goingRight = newIdx > oldIdx;
+  const goingRight = gears.indexOf(g) > gears.indexOf(state.gear);
 
-  // Update buttons
   document.querySelectorAll('.gear-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`gear-${g}`).classList.add('active');
 
-  // Animate
-  const display = document.getElementById('gearDisplay');
-  const oldLetter = document.getElementById('gearLetter');
-
-  // Animate out
-  oldLetter.style.animation = `gearOut${goingRight ? 'Left' : 'Right'} 0.2s ease-in forwards`;
+  const el = document.getElementById('gearLetter');
+  el.style.animation = `gearOut${goingRight ? 'Left' : 'Right'} 0.2s ease-in forwards`;
 
   setTimeout(() => {
-    oldLetter.textContent = g;
-    oldLetter.style.animation = `gearIn${goingRight ? 'Left' : 'Right'} 0.2s ease-out forwards`;
-    setTimeout(() => { oldLetter.style.animation = ''; }, 200);
+    el.textContent = g;
+    el.style.animation = `gearIn${goingRight ? 'Left' : 'Right'} 0.2s ease-out forwards`;
+    setTimeout(() => el.style.animation = '', 200);
   }, 180);
 
   state.gear = g;
@@ -860,41 +663,29 @@ function setGear(g) {
 function switchScreen(idx) {
   state.screen = idx;
   document.getElementById('screenSlider').style.transform = `translateX(-${idx * 480}px)`;
-
-  // External dots
-  document.getElementById('extDot0').className = 'nav-dot' + (idx === 0 ? ' active' : '');
-  document.getElementById('extDot1').className = 'nav-dot' + (idx === 1 ? ' active' : '');
-
-  updateDashDots();
+  document.getElementById('extDot0').className = 'ext-dot' + (idx === 0 ? ' active' : '');
+  document.getElementById('extDot1').className = 'ext-dot' + (idx === 1 ? ' active' : '');
+  updateDots();
 }
 
-function updateDashDots() {
+function updateDots() {
   ['dashDots', 'statusDots'].forEach(id => {
     const dots = document.getElementById(id).children;
-    for (let i = 0; i < dots.length; i++) {
+    for (let i = 0; i < dots.length; i++)
       dots[i].className = 'dash-dot' + (i === state.screen ? ' active' : '');
-    }
   });
 }
 
 // ── Presets ────────────────────────────────────────────────────────
 
-function presetAllOn() {
-  ICONS.forEach(i => setIconState(i.id, true));
-}
-
-function presetAllOff() {
-  ICONS.forEach(i => setIconState(i.id, false));
-}
+function presetAllOn() { ICONS.forEach(i => setIconState(i.id, true)); }
+function presetAllOff() { ICONS.forEach(i => setIconState(i.id, false)); }
 
 function presetDriveMode() {
   presetAllOff();
   setGear('D');
   setIconState('high_beam', true);
-  state.status.soc = 72.3;
-  state.status.voltage = 380.2;
-  state.status.current = -45.6;
-  state.status.range = 280;
+  Object.assign(state.status, { soc: 72.3, voltage: 380.2, current: -45.6, range: 280 });
   updateStatusScreen();
   updateStatusInputs();
 }
@@ -902,15 +693,8 @@ function presetDriveMode() {
 function presetChargeMode() {
   presetAllOff();
   setGear('P');
-  setIconState('ev_charger', true);
-  setIconState('ccs2', true);
-  setIconState('arrow_left', true);
-  setIconState('arrow_right', true);
-  state.status.soc = 45.2;
-  state.status.voltage = 360.8;
-  state.status.current = 32.0;
-  state.status.range = 175;
-  state.status.cellBalance = 'Balancing';
+  ['ev_charger', 'ccs2', 'arrow_left', 'arrow_right'].forEach(id => setIconState(id, true));
+  Object.assign(state.status, { soc: 45.2, voltage: 360.8, current: 32.0, range: 175, cellBalance: 'Balancing' });
   updateStatusScreen();
   updateStatusInputs();
 }
@@ -918,10 +702,7 @@ function presetChargeMode() {
 function presetFaultMode() {
   presetAllOff();
   ['hvil', 'brake_warn', 'engine', 'hv_warn1', 'hv_warn2', 'thermo_hot', 'abs'].forEach(id => setIconState(id, true));
-  state.status.health = 62;
-  state.status.tempFront = 55;
-  state.status.voltageDelta = 0.85;
-  state.status.cellBalance = 'FAULT';
+  Object.assign(state.status, { health: 62, tempFront: 55, voltageDelta: 0.85, cellBalance: 'FAULT' });
   updateStatusScreen();
   updateStatusInputs();
 }
@@ -929,21 +710,16 @@ function presetFaultMode() {
 function updateStatusInputs() {
   document.querySelectorAll('#statusInputs input').forEach(inp => {
     const key = inp.dataset.key;
-    if (key && state.status[key] !== undefined) {
-      inp.value = state.status[key];
-    }
+    if (key && state.status[key] !== undefined) inp.value = state.status[key];
   });
 }
 
-// ── Touch/swipe support on preview ────────────────────────────────
+// ── Swipe on preview ──────────────────────────────────────────────
 
-let touchStartX = 0;
-document.querySelector('.screen-frame').addEventListener('pointerdown', e => { touchStartX = e.clientX; });
+let touchX = 0;
+document.querySelector('.screen-frame').addEventListener('pointerdown', e => touchX = e.clientX);
 document.querySelector('.screen-frame').addEventListener('pointerup', e => {
-  const dx = e.clientX - touchStartX;
-  if (Math.abs(dx) > 30) {
-    switchScreen(dx < 0 ? 1 : 0);
-  }
+  if (Math.abs(e.clientX - touchX) > 30) switchScreen(e.clientX < touchX ? 1 : 0);
 });
 
 // ── Init ──────────────────────────────────────────────────────────
