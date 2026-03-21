@@ -75,7 +75,10 @@ static void on_can_icon_msg(uint32_t msg_id, const uint8_t *data, uint8_t len)
 void vehicle_state_init(void)
 {
     s_mutex = xSemaphoreCreateMutex();
-    configASSERT(s_mutex != NULL);
+    if (s_mutex == NULL) {
+        ESP_LOGE(TAG, "FATAL: Failed to create vehicle_state mutex");
+        abort();
+    }
 
     /* Auto-register CAN handlers for all icons with mapped CAN IDs.
      * We track which IDs we've already registered to avoid duplicates
