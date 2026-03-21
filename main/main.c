@@ -108,7 +108,10 @@ void app_main(void)
     /* 6. Transition from splash to main dashboard */
     clear_splash_and_init_ui();
 
-    /* 7. Start CAN bus receive task (runs on Core 0) */
+    /* 7. Start ADR self-test (ACC state triggers 3s tell-tale check) */
+    vehicle_state_set_op_state(VEHICLE_STATE_ACC);
+
+    /* 8. Start CAN bus receive task (runs on Core 0) */
     if (ret == ESP_OK) {
         ret = can_bus_start_task();
         if (ret != ESP_OK) {

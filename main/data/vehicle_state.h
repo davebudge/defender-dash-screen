@@ -17,6 +17,21 @@
 extern "C" {
 #endif
 
+/* ── Vehicle operating state (key barrel) ──────────────────────────── */
+
+typedef enum {
+    VEHICLE_STATE_OFF = 0,    /**< Key out / screen off */
+    VEHICLE_STATE_ACC,        /**< Accessory — screen on, self-test runs */
+    VEHICLE_STATE_ON,         /**< Run/Ready — full operation, CAN icons active */
+    VEHICLE_STATE_CHARGE,     /**< Charge cable connected */
+} vehicle_op_state_t;
+
+typedef enum {
+    SELF_TEST_IDLE = 0,       /**< No self-test in progress */
+    SELF_TEST_ACTIVE,         /**< ADR tell-tales illuminated (3s) */
+    SELF_TEST_COMPLETE,       /**< Self-test finished, normal operation */
+} self_test_phase_t;
+
 /* ── Icon states ───────────────────────────────────────────────────── */
 
 typedef enum {
@@ -122,6 +137,33 @@ vehicle_status_t vehicle_state_get_status(void);
  * Pass a pointer to a fully populated vehicle_status_t.
  */
 void vehicle_state_set_status(const vehicle_status_t *status);
+
+/* ── Vehicle operating state API ──────────────────────────────────── */
+
+/**
+ * @brief Get the current vehicle operating state
+ */
+vehicle_op_state_t vehicle_state_get_op_state(void);
+
+/**
+ * @brief Set the vehicle operating state (triggers state transitions)
+ *
+ * OFF→ACC or ACC→ON triggers ADR self-test (3s tell-tale illumination).
+ * OFF clears all icons. Thread-safe.
+ */
+void vehicle_state_set_op_state(vehicle_op_state_t new_state);
+
+/**
+ * @brief Get the current self-test phase
+ */
+self_test_phase_t vehicle_state_get_self_test_phase(void);
+
+/**
+ * @brief Advance self-test timer (call from LVGL timer, 100ms interval)
+ *
+ * Non-blocking. After 3s, clears self-test icons that have no CAN fault.
+ */
+void vehicle_state_self_test_tick(uint32_t elapsed_ms);
 
 #ifdef __cplusplus
 }

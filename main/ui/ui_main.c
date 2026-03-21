@@ -57,6 +57,9 @@ static void ui_update_timer_cb(lv_timer_t *timer)
 {
     (void)timer;
 
+    /* Always tick the self-test timer (non-blocking) */
+    vehicle_state_self_test_tick(UI_UPDATE_PERIOD_MS);
+
     if (vehicle_state_is_dirty()) {
         /* Only update the visible screen for efficiency */
         if (s_current_tile == 0) {

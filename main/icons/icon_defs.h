@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 #include "lvgl.h"
 
@@ -69,6 +70,7 @@ typedef struct {
     uint32_t            can_msg_id;   /**< CAN message ID (0 = not yet mapped) */
     uint8_t             can_byte;     /**< Byte index within CAN data (0-7) */
     uint8_t             can_bit_mask; /**< Bit mask within that byte */
+    bool                adr_self_test;/**< Illuminate during ADR startup self-test */
 } icon_def_t;
 
 /* ── Grid layout constants ─────────────────────────────────────────── */

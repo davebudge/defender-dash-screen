@@ -6,6 +6,8 @@
 #include "vehicle_state.h"
 #include "can_bus.h"
 
+#include <string.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_log.h"
@@ -18,6 +20,15 @@ static SemaphoreHandle_t s_mutex = NULL;
 static icon_state_t s_icon_states[ICON_COUNT] = {0};  /* All OFF initially */
 static gear_t s_gear = GEAR_P;
 static bool s_dirty = true;  /* Start dirty so first UI update runs */
+
+/* ── Operating state & self-test ──────────────────────────────────── */
+
+static vehicle_op_state_t s_op_state = VEHICLE_STATE_OFF;
+static self_test_phase_t  s_self_test_phase = SELF_TEST_IDLE;
+static uint32_t           s_self_test_elapsed_ms = 0;
+static bool               s_self_test_icons[ICON_COUNT] = {0};
+
+#define SELF_TEST_DURATION_MS  3000  /* 3 seconds per ADR */
 static vehicle_status_t s_status = {
     .soc = 0.0f,
     .battery_voltage = 0.0f,
@@ -46,6 +57,12 @@ static vehicle_status_t s_status = {
 static void on_can_icon_msg(uint32_t msg_id, const uint8_t *data, uint8_t len)
 {
     xSemaphoreTake(s_mutex, portMAX_DELAY);
+
+    /* Only process CAN icon updates in ON or CHARGE states */
+    if (s_op_state != VEHICLE_STATE_ON && s_op_state != VEHICLE_STATE_CHARGE) {
+        xSemaphoreGive(s_mutex);
+        return;
+    }
 
     for (int i = 0; i < ICON_COUNT; i++) {
         if (icon_defs[i].can_msg_id == msg_id) {
@@ -178,5 +195,109 @@ void vehicle_state_set_status(const vehicle_status_t *status)
     xSemaphoreTake(s_mutex, portMAX_DELAY);
     s_status = *status;
     s_dirty = true;
+    xSemaphoreGive(s_mutex);
+}
+
+/* ── Vehicle operating state ──────────────────────────────────────── */
+
+vehicle_op_state_t vehicle_state_get_op_state(void)
+{
+    vehicle_op_state_t state;
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+    state = s_op_state;
+    xSemaphoreGive(s_mutex);
+    return state;
+}
+
+void vehicle_state_set_op_state(vehicle_op_state_t new_state)
+{
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+
+    if (new_state == s_op_state) {
+        xSemaphoreGive(s_mutex);
+        return;
+    }
+
+    vehicle_op_state_t old_state = s_op_state;
+    s_op_state = new_state;
+    s_dirty = true;
+
+    static const char * const STATE_NAMES[] = { "OFF", "ACC", "ON", "CHARGE" };
+    ESP_LOGI(TAG, "Op state: %s -> %s", STATE_NAMES[old_state], STATE_NAMES[new_state]);
+
+    /* OFF: cancel self-test, clear all icons */
+    if (new_state == VEHICLE_STATE_OFF) {
+        s_self_test_phase = SELF_TEST_IDLE;
+        s_self_test_elapsed_ms = 0;
+        memset(s_self_test_icons, 0, sizeof(s_self_test_icons));
+        for (int i = 0; i < ICON_COUNT; i++) {
+            s_icon_states[i] = ICON_STATE_OFF;
+        }
+    }
+
+    /* ON or CHARGE: cancel any self-test, only CAN-driven icons */
+    if (new_state == VEHICLE_STATE_ON || new_state == VEHICLE_STATE_CHARGE) {
+        if (s_self_test_phase == SELF_TEST_ACTIVE) {
+            for (int i = 0; i < ICON_COUNT; i++) {
+                if (s_self_test_icons[i]) {
+                    s_self_test_icons[i] = false;
+                    s_icon_states[i] = ICON_STATE_OFF;
+                }
+            }
+            s_self_test_phase = SELF_TEST_COMPLETE;
+            ESP_LOGI(TAG, "Self-test cancelled (entering %s)",
+                     new_state == VEHICLE_STATE_ON ? "ON" : "CHARGE");
+        }
+    }
+
+    /* OFF→ACC: start ADR self-test */
+    if (old_state == VEHICLE_STATE_OFF && new_state == VEHICLE_STATE_ACC) {
+        s_self_test_phase = SELF_TEST_ACTIVE;
+        s_self_test_elapsed_ms = 0;
+        for (int i = 0; i < ICON_COUNT; i++) {
+            if (icon_defs[i].adr_self_test) {
+                s_self_test_icons[i] = true;
+                s_icon_states[i] = ICON_STATE_ON;
+            }
+        }
+        ESP_LOGI(TAG, "ADR self-test started (%d ms)", SELF_TEST_DURATION_MS);
+    }
+
+    xSemaphoreGive(s_mutex);
+}
+
+self_test_phase_t vehicle_state_get_self_test_phase(void)
+{
+    self_test_phase_t phase;
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+    phase = s_self_test_phase;
+    xSemaphoreGive(s_mutex);
+    return phase;
+}
+
+void vehicle_state_self_test_tick(uint32_t elapsed_ms)
+{
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+
+    if (s_self_test_phase != SELF_TEST_ACTIVE) {
+        xSemaphoreGive(s_mutex);
+        return;
+    }
+
+    s_self_test_elapsed_ms += elapsed_ms;
+
+    if (s_self_test_elapsed_ms >= SELF_TEST_DURATION_MS) {
+        /* Self-test complete: turn off self-test icons */
+        for (int i = 0; i < ICON_COUNT; i++) {
+            if (s_self_test_icons[i]) {
+                s_self_test_icons[i] = false;
+                s_icon_states[i] = ICON_STATE_OFF;
+            }
+        }
+        s_self_test_phase = SELF_TEST_COMPLETE;
+        s_dirty = true;
+        ESP_LOGI(TAG, "ADR self-test complete");
+    }
+
     xSemaphoreGive(s_mutex);
 }

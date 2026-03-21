@@ -14,10 +14,10 @@ extern "C" {
 /* ── Dashboard colors ──────────────────────────────────────────────── */
 
 #define UI_COLOR_BG         lv_color_black()
-#define UI_COLOR_RED         lv_color_make(0xFF, 0x00, 0x00)
-#define UI_COLOR_AMBER       lv_color_make(0xFF, 0xA5, 0x00)
-#define UI_COLOR_BLUE        lv_color_make(0x00, 0x99, 0xFF)
-#define UI_COLOR_GREEN       lv_color_make(0x00, 0xFF, 0x00)
+#define UI_COLOR_RED         lv_color_make(0xFF, 0x00, 0x00)    /* SAE J578 signal red */
+#define UI_COLOR_AMBER       lv_color_make(0xFF, 0x8C, 0x00)    /* SAE J578 amber (orange) */
+#define UI_COLOR_BLUE        lv_color_make(0x00, 0x66, 0xFF)    /* SAE J578 signal blue */
+#define UI_COLOR_GREEN       lv_color_make(0x00, 0xCC, 0x00)    /* SAE J578 signal green */
 #define UI_COLOR_WHITE       lv_color_white()
 #define UI_COLOR_DIM         lv_color_make(0x30, 0x30, 0x30)
 
