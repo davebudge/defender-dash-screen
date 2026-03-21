@@ -160,11 +160,14 @@
   }
 
   .gear-letter {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 128px;
-    font-weight: 700;
-    color: white;
-    line-height: 1;
+    height: 122px;
+  }
+
+  .gear-letter img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    image-rendering: auto;
   }
 
   @keyframes gearOutLeft { to { transform: translateX(-40px); opacity: 0; } }
@@ -370,7 +373,7 @@
           <div class="screen-page" id="dashScreen">
             <div id="iconContainer"></div>
             <div class="gear-display" id="gearDisplay">
-              <span class="gear-letter" id="gearLetter">P</span>
+              <div class="gear-letter" id="gearLetter"><img src="icons/letter.p.png" alt="P"></div>
             </div>
             <div class="dash-nav-dots" id="dashDots"></div>
           </div>
@@ -650,7 +653,8 @@ function setGear(g) {
   el.style.animation = `gearOut${goingRight ? 'Left' : 'Right'} 0.2s ease-in forwards`;
 
   setTimeout(() => {
-    el.textContent = g;
+    el.querySelector('img').src = `icons/letter.${g.toLowerCase()}.png`;
+    el.querySelector('img').alt = g;
     el.style.animation = `gearIn${goingRight ? 'Left' : 'Right'} 0.2s ease-out forwards`;
     setTimeout(() => el.style.animation = '', 200);
   }, 180);
