@@ -89,6 +89,40 @@ void vehicle_state_set_gear(gear_t gear);
  */
 bool vehicle_state_is_dirty(void);
 
+/* ── Vehicle status telemetry ──────────────────────────────────────── */
+
+typedef struct {
+    float    soc;                  /**< State of charge (%) */
+    float    battery_voltage;      /**< Battery pack voltage (V) */
+    float    battery_current;      /**< Battery current (A) */
+    float    battery_temp_front;   /**< Battery temperature front (C) */
+    float    battery_temp_rear;    /**< Battery temperature rear (C) */
+    float    pack_voltage_delta;   /**< Pack voltage delta (V) */
+    char     cell_balance[16];     /**< Cell balance status string */
+    uint16_t charge_cycles;        /**< Total charge cycles */
+    uint8_t  battery_health;       /**< Battery health (%) */
+    float    max_discharge_current;/**< Max discharge current (A) */
+    uint16_t estimated_range_km;   /**< Estimated remaining range (km) */
+    char     last_charged[16];     /**< Last charged date (YYYY-MM-DD) */
+    char     next_maintenance[16]; /**< Next maintenance date (YYYY-MM-DD) */
+    char     firmware_version[16]; /**< Firmware version string */
+} vehicle_status_t;
+
+/**
+ * @brief Get a copy of the current vehicle status
+ *
+ * Thread-safe. Returns a snapshot of all telemetry values.
+ */
+vehicle_status_t vehicle_state_get_status(void);
+
+/**
+ * @brief Update a vehicle status field
+ *
+ * Thread-safe. Typically called from CAN handler context.
+ * Pass a pointer to a fully populated vehicle_status_t.
+ */
+void vehicle_state_set_status(const vehicle_status_t *status);
+
 #ifdef __cplusplus
 }
 #endif

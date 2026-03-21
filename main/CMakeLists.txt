@@ -10,6 +10,7 @@ idf_component_register(
         "ui/ui_main.c"
         "ui/ui_warning_grid.c"
         "ui/ui_gear_display.c"
+        "ui/ui_status_screen.c"
         "ui/ui_styles.c"
         "data/vehicle_state.c"
         "icons/icon_defs.c"

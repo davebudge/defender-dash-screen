@@ -18,6 +18,22 @@ static SemaphoreHandle_t s_mutex = NULL;
 static icon_state_t s_icon_states[ICON_COUNT] = {0};  /* All OFF initially */
 static gear_t s_gear = GEAR_P;
 static bool s_dirty = true;  /* Start dirty so first UI update runs */
+static vehicle_status_t s_status = {
+    .soc = 0.0f,
+    .battery_voltage = 0.0f,
+    .battery_current = 0.0f,
+    .battery_temp_front = 0.0f,
+    .battery_temp_rear = 0.0f,
+    .pack_voltage_delta = 0.0f,
+    .cell_balance = "---",
+    .charge_cycles = 0,
+    .battery_health = 0,
+    .max_discharge_current = 0.0f,
+    .estimated_range_km = 0,
+    .last_charged = "---",
+    .next_maintenance = "---",
+    .firmware_version = "---",
+};
 
 /* ── CAN message handlers ──────────────────────────────────────────── */
 
@@ -142,4 +158,22 @@ bool vehicle_state_is_dirty(void)
     s_dirty = false;
     xSemaphoreGive(s_mutex);
     return dirty;
+}
+
+vehicle_status_t vehicle_state_get_status(void)
+{
+    vehicle_status_t status;
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+    status = s_status;
+    xSemaphoreGive(s_mutex);
+    return status;
+}
+
+void vehicle_state_set_status(const vehicle_status_t *status)
+{
+    if (status == NULL) return;
+    xSemaphoreTake(s_mutex, portMAX_DELAY);
+    s_status = *status;
+    s_dirty = true;
+    xSemaphoreGive(s_mutex);
 }
