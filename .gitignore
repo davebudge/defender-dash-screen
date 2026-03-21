@@ -1,0 +1,9 @@
+build/
+sdkconfig
+sdkconfig.old
+.vscode/
+managed_components/
+.claude/
+.DS_Store
+background-work/
+main/icons/png/
