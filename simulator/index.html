@@ -75,7 +75,7 @@
 
   .screen-slider {
     display: flex;
-    width: 960px;
+    width: 1440px;
     height: 800px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -275,6 +275,128 @@
     flex-shrink: 0;
   }
 
+  /* ── Vehicle Overview Screen ─────────────────────────── */
+
+  .overview-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #000;
+  }
+
+  .overview-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #666;
+    letter-spacing: 3px;
+    text-align: center;
+    padding: 20px 0 8px;
+  }
+
+  .overview-body {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .overview-stats-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  .overview-car {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    flex: 1;
+  }
+
+  .overview-car img {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 30px rgba(255,255,255,0.03));
+  }
+
+  .overview-stats-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  .ov-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+  }
+
+  .ov-stat.right {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .ov-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555;
+  }
+
+  .ov-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .ov-stat-value.green { color: #00FF00; }
+  .ov-stat-value.amber { color: #FFA500; }
+  .ov-stat-value.red { color: #FF0000; }
+  .ov-stat-value.blue { color: #0088FF; }
+
+  /* PRNDS bar at bottom of overview */
+  .prnds-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px 0 20px;
+    width: 100%;
+  }
+
+  .prnds-letter {
+    height: 28px;
+    opacity: 0.15;
+    transition: opacity 0.3s, filter 0.3s;
+  }
+
+  .prnds-letter img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .prnds-letter.active {
+    opacity: 1.0;
+  }
+
+  .prnds-letter.active[data-g="P"] img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(95%) saturate(7400%) hue-rotate(0deg) brightness(115%) contrast(115%);
+  }
+
   /* ── Control Panel ───────────────────────────────────── */
 
   .control-panel {
@@ -463,6 +585,59 @@
             </div>
             <div class="dash-nav-dots" id="dashDots"></div>
           </div>
+          <div class="screen-page" id="overviewScreen">
+            <div class="overview-screen">
+              <div class="overview-title">VEHICLE STATUS</div>
+              <div class="overview-body">
+                <div class="overview-stats-top">
+                  <div class="ov-stat">
+                    <span class="ov-stat-label">BATTERY</span>
+                    <span class="ov-stat-value green" id="ov-soc">86%</span>
+                  </div>
+                  <div class="ov-stat right">
+                    <span class="ov-stat-label">POWER</span>
+                    <span class="ov-stat-value" id="ov-power">0 kW</span>
+                  </div>
+                  <div class="ov-stat">
+                    <span class="ov-stat-label">PACK VOLTAGE</span>
+                    <span class="ov-stat-value" id="ov-voltage">394 V</span>
+                  </div>
+                  <div class="ov-stat right">
+                    <span class="ov-stat-label">SPEED</span>
+                    <span class="ov-stat-value" id="ov-speed">0 km/h</span>
+                  </div>
+                </div>
+                <div class="overview-car">
+                  <img src="defender-hero.png" alt="Defender Puma" onerror="this.style.opacity='0.15'; this.alt='Place defender-hero.png in simulator/';">
+                </div>
+                <div class="overview-stats-bottom">
+                  <div class="ov-stat">
+                    <span class="ov-stat-label">BATTERY TEMP</span>
+                    <span class="ov-stat-value" id="ov-batt-temp">28°C</span>
+                  </div>
+                  <div class="ov-stat right">
+                    <span class="ov-stat-label">MOTOR TEMP</span>
+                    <span class="ov-stat-value" id="ov-motor-temp">42°C</span>
+                  </div>
+                  <div class="ov-stat">
+                    <span class="ov-stat-label">MOTOR RPM</span>
+                    <span class="ov-stat-value" id="ov-rpm">0</span>
+                  </div>
+                  <div class="ov-stat right">
+                    <span class="ov-stat-label">RANGE</span>
+                    <span class="ov-stat-value" id="ov-range">320 km</span>
+                  </div>
+                </div>
+              </div>
+              <div class="prnds-bar" id="prndsBar">
+                <span class="prnds-letter active" data-g="P"><img src="icons/letter.p.png" alt="P"></span>
+                <span class="prnds-letter" data-g="R"><img src="icons/letter.r.png" alt="R"></span>
+                <span class="prnds-letter" data-g="N"><img src="icons/letter.n.png" alt="N"></span>
+                <span class="prnds-letter" data-g="D"><img src="icons/letter.d.png" alt="D"></span>
+                <span class="prnds-letter" data-g="S"><img src="icons/letter.s.png" alt="S"></span>
+              </div>
+            </div>
+          </div>
           <div class="screen-page" id="statusScreen">
             <div class="status-title">VEHICLE STATUS</div>
             <div class="status-rows" id="statusRows"></div>
@@ -472,8 +647,11 @@
       </div>
     </div>
     <div class="screen-nav">
-      <button class="nav-arrow" onclick="switchScreen(0)">‹</button>
-      <button class="nav-arrow" onclick="switchScreen(1)">›</button>
+      <button class="nav-arrow" onclick="switchScreen(Math.max(0, state.screen - 1))">‹</button>
+      <div class="ext-dot" id="extDot0"></div>
+      <div class="ext-dot" id="extDot1"></div>
+      <div class="ext-dot" id="extDot2"></div>
+      <button class="nav-arrow" onclick="switchScreen(Math.min(2, state.screen + 1))">›</button>
     </div>
   </div>
 
@@ -604,7 +782,8 @@ const state = {
     cellBalance: 'Good', chargeCycles: 150, health: 95,
     maxDischargeCurrent: 60, range: 320,
     lastCharged: '2023-10-01', nextMaint: '2024-04-01',
-    firmware: 'v2.3.1'
+    firmware: 'v2.3.1',
+    speed: 0, motorTemp: 42, motorRpm: 0
   }
 };
 ICONS.forEach(i => state.icons[i.id] = false);
@@ -784,6 +963,9 @@ function buildControls() {
     { key: 'lastCharged', label: 'Last Charged', type: 'date' },
     { key: 'nextMaint', label: 'Next Maint', type: 'date' },
     { key: 'firmware', label: 'Firmware', type: 'text' },
+    { key: 'speed', label: 'Speed (km/h)', type: 'number', step: 1 },
+    { key: 'motorTemp', label: 'Motor Temp (°C)', type: 'number', step: 1 },
+    { key: 'motorRpm', label: 'Motor RPM', type: 'number', step: 100 },
   ].forEach(f => {
     const div = document.createElement('div');
     div.className = 'status-field';
@@ -830,6 +1012,49 @@ function updateStatusScreen() {
     const el = document.getElementById(`sv-${key}`);
     if (el) el.textContent = fmt(state.status[key]);
   });
+  updateOverviewScreen();
+}
+
+function updateOverviewScreen() {
+  const s = state.status;
+  const power = Math.abs(s.voltage * s.current / 1000).toFixed(1);
+
+  const socEl = document.getElementById('ov-soc');
+  if (socEl) {
+    socEl.textContent = Math.round(s.soc) + '%';
+    socEl.className = 'ov-stat-value ' + (s.soc > 50 ? 'green' : s.soc > 20 ? 'amber' : 'red');
+  }
+  setText('ov-power', power + ' kW');
+  setText('ov-voltage', Math.round(s.voltage) + ' V');
+  setText('ov-speed', (s.speed || 0) + ' km/h');
+
+  const battTempEl = document.getElementById('ov-batt-temp');
+  if (battTempEl) {
+    const avgTemp = Math.round((s.tempFront + s.tempRear) / 2);
+    battTempEl.textContent = avgTemp + '\u00B0C';
+    battTempEl.className = 'ov-stat-value ' + (avgTemp > 45 ? 'red' : avgTemp > 35 ? 'amber' : '');
+  }
+
+  const motorTempEl = document.getElementById('ov-motor-temp');
+  if (motorTempEl) {
+    const mt = s.motorTemp || 42;
+    motorTempEl.textContent = mt + '\u00B0C';
+    motorTempEl.className = 'ov-stat-value ' + (mt > 100 ? 'red' : mt > 80 ? 'amber' : '');
+  }
+
+  setText('ov-rpm', s.motorRpm || 0);
+  setText('ov-range', s.range + ' km');
+
+  // Update PRNDS bar
+  document.querySelectorAll('.prnds-letter').forEach(el => {
+    const g = el.getAttribute('data-g');
+    el.className = 'prnds-letter' + (g === state.gear ? ' active' : '');
+  });
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
 }
 
 // ── Icon Control ──────────────────────────────────────────────────
@@ -888,21 +1113,19 @@ function setGear(g) {
   }, 180);
 
   state.gear = g;
+  updateOverviewScreen();
 }
 
 // ── Screen Navigation ─────────────────────────────────────────────
 
 function switchScreen(idx) {
-  state.screen = idx;
-  document.getElementById('screenSlider').style.transform = `translateX(-${idx * 480}px)`;
-}
-
-function updateDots() {
-  ['dashDots', 'statusDots'].forEach(id => {
-    const dots = document.getElementById(id).children;
-    for (let i = 0; i < dots.length; i++)
-      dots[i].className = 'dash-dot' + (i === state.screen ? ' active' : '');
-  });
+  state.screen = Math.max(0, Math.min(2, idx));
+  document.getElementById('screenSlider').style.transform = `translateX(-${state.screen * 480}px)`;
+  // Update external nav dots
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById(`extDot${i}`);
+    if (dot) dot.className = 'ext-dot' + (i === state.screen ? ' active' : '');
+  }
 }
 
 // ── Presets ────────────────────────────────────────────────────────
@@ -916,7 +1139,7 @@ function presetDriveMode() {
   setTimeout(() => {
     setGear('D');
     setIconState('high_beam', true);
-    Object.assign(state.status, { soc: 72.3, voltage: 380.2, current: -45.6, range: 280 });
+    Object.assign(state.status, { soc: 72.3, voltage: 380.2, current: -45.6, range: 280, speed: 85, motorTemp: 68, motorRpm: 4200 });
     updateStatusScreen();
     updateStatusInputs();
   }, state.selfTestActive ? 3100 : 100);
@@ -996,7 +1219,8 @@ function updateStatusInputs() {
 let touchX = 0;
 document.querySelector('.screen-frame').addEventListener('pointerdown', e => touchX = e.clientX);
 document.querySelector('.screen-frame').addEventListener('pointerup', e => {
-  if (Math.abs(e.clientX - touchX) > 30) switchScreen(e.clientX < touchX ? 1 : 0);
+  const dx = e.clientX - touchX;
+  if (Math.abs(dx) > 30) switchScreen(dx < 0 ? state.screen + 1 : state.screen - 1);
 });
 
 // ── Init ──────────────────────────────────────────────────────────
@@ -1005,6 +1229,8 @@ buildDashboard();
 buildKeyBarrel();
 buildControls();
 buildStatusScreen();
+updateOverviewScreen();
+switchScreen(0);
 
 // Start in OFF state — screen is off
 document.getElementById('screenSlider').style.visibility = 'hidden';
